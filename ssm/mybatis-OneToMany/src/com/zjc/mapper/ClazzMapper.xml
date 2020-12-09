@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace属性是名称空间（包名）
+        它的值只能是Mapper接口的全类名
+-->
+<mapper namespace="com.zjc.mapper.ClazzMapper">
+
+    <resultMap id="queryClazzByIdForSimpleResultMap"
+               type="com.zjc.pojo.Clazz">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+
+        <!--
+            collection标签用于配置集合类型的属性
+                property="stuList" 属性名
+                ofType是集合中每一个元素的具体类型
+        -->
+        <collection property="stuList" ofType="com.zjc.pojo.Student">
+            <id column="stu_id" property="id" />
+            <result column="stu_name" property="name" />
+        </collection>
+
+    </resultMap>
+<!--
+    /**
+    * 一次性把班级，和班级所有学生信息，都查询出来<br/>
+    */
+    public Clazz queryClazzByIdForSimple(Integer id);
+-->
+    <select id="queryClazzByIdForSimple"
+            resultMap="queryClazzByIdForSimpleResultMap">
+        select
+            t_clazz.id,
+            t_clazz.name,
+            t_student.id stu_id,
+            t_student.name stu_name
+        from
+            t_clazz left join t_student
+        on
+            t_clazz.id = t_student.clazz_id
+        where
+            t_clazz.id = #{id}
+    </select>
+
+
+</mapper>

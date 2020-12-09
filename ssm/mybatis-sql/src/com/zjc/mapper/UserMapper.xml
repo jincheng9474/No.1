@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace属性是名称空间（包名）
+        它的值只能是Mapper接口的全类名
+-->
+<mapper namespace="com.zjc.mapper.UserMapper">
+
+    <!--
+        sql标签用于定义sql片段
+            id是唯一标识
+    -->
+    <sql id="t_user_sql1">
+         `id`,`last_name` lastName,`sex`
+    </sql>
+<!--    /**
+    * 根据用户的lastName属性并且sex属性值来做查询用户信息
+    * @param user
+    * @return
+    */
+    public List<User> queryUsersBySample(User user);
+    -->
+    <select id="queryUsersBySample" resultType="com.zjc.pojo.User">
+        select
+            <!-- include 是包含，引入，
+                    refid是引入哪个sql片段的id
+            -->
+            <include refid="t_user_sql1"></include>
+        from
+            t_user
+        <!--
+            where标签可以去掉，它包含的sql语句前面的and或or关键字，
+            同时会看有where里的内容是否存在，如果存在还要添加where关键字
+         -->
+        <trim suffixOverrides="and" prefix="where">
+            <if test="lastName != null">
+                last_name like concat('%',#{lastName},'%') and
+            </if>
+            <if test="sex == 0 || sex == 1">
+                sex = #{sex}
+            </if>
+        </trim>
+    </select>
+
+<!--
+    /**
+    * 如果用户名lastName属性值有效，则只使用lastName属性查询用户<br/>
+    * 如果用户名lastName无效，而sex有效，而使用sex属性查询用户<br/>
+    * 如果lastName属性和sex属性都无效，则可以使用自定义条件查询
+    */
+    public List<User> queryUsersBySampleChoose(User user);
+-->
+    <select id="queryUsersBySampleChoose"
+            parameterType="com.zjc.pojo.User" resultType="com.zjc.pojo.User">
+        select
+            `id`,`last_name` lastName,`sex`
+        from
+            t_user
+        <where>
+            <choose>
+                <when test="lastName != null">
+                    last_name like concat('%',#{lastName},'%')
+                </when>
+                <when test="sex == 0 || sex == 1">
+                    sex = #{sex}
+                </when>
+                <!-- otherwise 可选 -->
+                <otherwise>
+                    1 = 1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+
+<!--    /**
+    * 更新用户
+    */
+    public int updateUser(User user);
+
+    -->
+    <update id="updateUser" parameterType="com.zjc.pojo.User">
+        update
+            t_user
+        <set>
+            <if test="lastName != null">
+                `last_name` = #{lastName}
+            </if>
+            <if test="sex == 0 || sex == 1">
+                , `sex` = #{sex}
+            </if>
+        </set>
+        where
+            id = #{id}
+    </update>
+
+
+
+<!--
+    public List<User> queryUsersByIds(List<Integer> ids);
+-->
+    <select id="queryUsersByIds" resultType="com.zjc.pojo.User">
+        select
+            `id`,`last_name` lastName, `sex`
+        from
+            t_user
+        <where>
+            <!-- foreach标签用于遍历操作
+        collection属性是遍历的数据源
+        item 是当前遍历到的数据
+        separator 属性设置每次遍历的元素中间的间隔符
+        close 表示遍历后添加的内容
+        open 表示遍历前添加的内容
+ -->
+            <foreach collection="list" item="id" separator="," close=")" open="id in (">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+
+
+<!--
+    public int insertUsers(List<User> users);
+-->
+    <insert id="insertUsers" >
+        insert into 
+            t_user(`last_name`,`sex`)
+            values
+            <foreach collection="list" item="user" separator=",">
+                ( #{user.lastName} , #{user.sex})
+            </foreach>
+    </insert>
+
+
+
+</mapper>

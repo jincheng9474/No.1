@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean class="com.zjc.pojo.Car" id="car">
+        <property name="carNo" value="京A123456" />
+        <property name="name" value="柯尼塞格"/>
+    </bean>
+
+    <bean class="com.zjc.pojo.Person" id="p26">
+    <!--
+        实验26：[SpEL测试I]在SpEL中使用字面量
+        使用格式：#{数值}        #{“字符串” || ‘字符串’}
+        <property name="name" value="#{'SpringEL 赋值字符串'}" />
+    -->
+    <property name="id" value="#{26}"/>
+        <!--
+            实验27：[SpEL测试II]在SpEL中引用其他bean
+            使用格式：#{bean的id}
+        -->
+        <property name="car" value="#{car}"/>
+
+        <!--
+            实验28：[SpEL测试III]在SpEL中引用其他bean的某个属性值
+                使用格式： #{bean.属性名}
+        -->
+        <property name="phone" value="#{car.carNo}"/>
+        <!--
+                实验29：[SpEL测试IV]在SpEL中调用非静态方法
+                使用格式： #{bean.方法名(参数)}
+                <property name="name" value="#{car.noStaticFun()}" />
+                -->
+
+        <!--
+            实验30：[SpEL测试V]在SpEL中调用静态方法
+            使用格式：#{T(全名类).方法名(参数)}
+        -->
+        <property name="name" value="#{T(com.zjc.pojo.Car).staticFun()}" />
+
+        <!--
+            实验31：[SpEL测试VI]在SpEL中使用运算符
+            使用格式：#{表达式}
+        -->
+        <property name="salary" value="#{10000 * 14}" />
+
+    </bean>
+
+</beans>

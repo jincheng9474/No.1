@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace属性是名称空间（包名）
+        它的值只能是Mapper接口的全类名
+-->
+<mapper namespace="com.zjc.mapper.UserMapper">
+
+    <!--    /**
+        * 根据id查询出User对象
+        * @return
+        */
+        public User queryUserById(Integer id);
+
+            select语句配select标签
+            update语句配update标签
+            delete语句配delete标签
+            insert语句配insert标签
+
+                id属性是一个唯一的标识，必须是方法名
+                parameterType属性设置方法的参数类型（可选的，参数类型为JavaBean的时候推荐写）
+                resultType属性（只有查询才有）设置查询回来的每一行记录转换为什么具体的类型对象
+
+           #{id} 表示参数的占位符?,   id是参数名（明天讲如何写参数名）
+        -->
+    <select id="queryUserById" parameterType="int"
+            resultType="com.zjc.pojo.User">
+        select `id`,`last_name` lastName,`sex` from t_user where id = #{id}
+    </select>
+    <!--
+    查询全部
+    resultType属性设置查询回来的每一行记录转换为什么具体的类型
+    -->
+    <select id="queryUsers" resultType="com.zjc.pojo.User">
+        select `id`,`last_name` lastName,`sex` from t_user
+    </select>
+
+    <!--
+        查询全部
+        @MapKey("id")
+    -->
+    <select id="queryUsersForMap" resultType="com.zjc.pojo.User">
+        select `id`,`last_name` lastName,`sex` from t_user
+    </select>
+    <!--
+        添加用户
+        useGeneratedkeys="true" 表示程序要使用数据库生成的主键值
+        KeyProperty="id"表示将生成的主键值赋给id属性
+    -->
+    <insert id="insertUser" parameterType="com.zjc.pojo.User" useGeneratedKeys="true" keyProperty="id">
+    <!--
+        selectKey标签可以配置一个用于查询主键的sql
+        order="" 属性设置当前selectKey的执行顺序
+                AFTER       后执行
+                BEFORE      先执行
+        KeyProperty="id"表示将生成的主键值赋给id属性
+    -->
+        insert into t_user(`last_name`,sex) values (#{lastName},#{sex})
+    </insert>
+    <!--
+        更新用户
+    -->
+    <update id="updateUser" parameterType="com.zjc.pojo.User">
+        update t_user set `last_name`=#{lastName},`sex`=#{sex} where id=#{id}
+    </update>
+    <!--
+        删除用户
+    -->
+    <delete id="deleteUserById">
+        delete from t_user where id=#{id}
+    </delete>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace属性是名称空间（包名）
+        它的值只能是Mapper接口的全类名
+-->
+<mapper namespace="com.zjc.mapper.LockMapper">
+
+<!--    /**
+    * 只是根据lock编号查询lock信息（不常用列）
+    */
+    public Lock queryLockById(Integer id);
+   -->
+    <select id="queryLockById" resultType="com.zjc.pojo.Lock">
+        select `id`,`name` from t_lock where id = #{id};
+    </select>
+
+
+</mapper>

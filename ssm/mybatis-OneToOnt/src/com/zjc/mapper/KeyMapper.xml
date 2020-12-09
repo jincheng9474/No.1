@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace属性是名称空间（包名）
+        它的值只能是Mapper接口的全类名
+-->
+<mapper namespace="com.zjc.mapper.KeyMapper">
+
+    <!--
+        id属性是唯一标识
+        type属性是将每一行转换的具体类型
+    -->
+    <resultMap id="queryKeyByIdResultMap" type="com.zjc.pojo.Key">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <!--
+            级联属性映射
+        <result column="lock_id" property="lock.id" />
+        <result column="lock_name" property="lock.name" />-->
+
+        <!--
+            association 标签用于映射一个子对象
+                property="lock" 属性名
+                javaType属性指定子对象的属性名
+        -->
+        <association property="lock" javaType="com.zjc.pojo.Lock">
+            <result column="lock_id" property="id" />
+            <result column="lock_name" property="name" />
+        </association>
+    </resultMap>
+
+
+<!--
+    /**
+    * 根据给定的id，查询出相应的Key信息，以及Lock锁的信息
+    * @param id
+    * @return
+    */
+    public Key queryKeyById(Integer id);
+   -->
+    <select id="queryKeyById" resultMap="queryKeyByIdResultMap">
+        select
+            t_key.id id,
+            t_key.name name,
+            t_lock.id lock_id,
+            t_lock.name lock_name
+        from
+            t_key join t_lock
+        on
+            t_key.lock_id = t_lock.id
+        where
+            t_key.id = #{id}
+    </select>
+
+
+
+
+
+
+
+
+
+
+    <resultMap id="queryKeyByIdForTwoStepResultMap"
+               type="com.zjc.pojo.Key">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <!--
+            association使用一次查询得到子对象
+                property="lock" 属性名
+                select 表示调用哪个查询得到子对象(名称空间namespace + id)
+                column="lock_id" 表示将结果集中哪个列做为参数去调用select的方法
+        -->
+        <association property="lock" column="lock_id"
+            select="com.zjc.mapper.LockMapper.queryLockById"/>
+    </resultMap>
+<!--
+    /**
+    * 要两次查询，一次查Key（常用列表）,一次查Lock锁（不常用表）
+    * @param id
+    * @return
+    */
+    public Key queryKeyByIdForTwoStep(Integer id);
+-->
+    <select id="queryKeyByIdForTwoStep" resultMap="queryKeyByIdForTwoStepResultMap">
+        select `id`,`name`,`lock_id` from t_key where id = #{id}
+    </select>
+
+</mapper>
